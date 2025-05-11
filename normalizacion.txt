@@ -1,0 +1,148 @@
+# PROCESO DE NORMALIZACIÓN DE LA BASE DE DATOS EDITORIAL
+
+## DATOS SIN NORMALIZAR
+
+En su forma inicial, los datos podrían estar en una única tabla con toda la información mezclada:
+
+| ID_Venta | Fecha_Venta | Cliente_Nombre | Cliente_Email | Cliente_Telefono | Cliente_Ciudad | Libro_Titulo | Libro_Genero | Libro_Fecha_Publicacion | Autor_Nombre | Autor_Apellido | Autor_Nacionalidad | Autor_Fecha_Nacimiento | Es_Autor_Principal | Cantidad | Precio_Unitario |
+|----------|-------------|----------------|---------------|------------------|----------------|--------------|--------------|--------------------------|--------------|----------------|--------------------|-----------------------|-------------------|----------|-----------------|
+| 1        | 2023-06-01  | Andrea Ríos    | andrea.rios@mail.com | 555-1234 | Buenos Aires | Introducción a la Filosofía | Filosofía | 2020-03-15 | María | González | Argentina | 1975-06-12 | Sí | 2 | 25.00 |
+| 2        | 2023-06-05  | Pedro Núñez    | pedro.nunez@mail.com | 555-2345 | Santiago | Historia de América Latina | Historia | 2018-10-01 | Carlos | Pérez | México | 1980-02-24 | Sí | 1 | 30.00 |
+| 3        | 2023-06-10  | Lucía Vega     | lucia.vega@mail.com | 555-3456 | Lima | Programación en Python | Tecnología | 2021-07-20 | Lucía | Martínez | España | 1990-10-05 | Sí | 3 | 40.00 |
+| 4        | 2023-06-10  | Lucía Vega     | lucia.vega@mail.com | 555-3456 | Lima | Programación en Python | Tecnología | 2021-07-20 | Ana | Torres | Chile | 1985-07-19 | No | 3 | 40.00 |
+
+## PRIMERA FORMA NORMAL (1NF)
+
+La primera forma normal requiere que:
+1. Cada columna contenga valores atómicos (indivisibles)
+2. Cada columna contenga valores del mismo tipo
+3. Cada fila sea única (identificada por una clave primaria)
+4. No haya grupos repetitivos
+
+En el caso de nuestra tabla, debemos eliminar la repetición de datos cuando un libro tiene varios autores:
+
+### Tabla Ventas (1NF)
+
+| ID_Venta | Fecha_Venta | Cliente_ID | Libro_ID | Cantidad | Precio_Unitario |
+|----------|-------------|------------|----------|----------|-----------------|
+| 1        | 2023-06-01  | 1          | 1        | 2        | 25.00           |
+| 2        | 2023-06-05  | 2          | 2        | 1        | 30.00           |
+| 3        | 2023-06-10  | 3          | 3        | 3        | 40.00           |
+
+### Tabla Clientes (1NF)
+
+| ID_Cliente | Nombre      | Email              | Telefono  | Ciudad       |
+|------------|-------------|-------------------|-----------|--------------|
+| 1          | Andrea Ríos | andrea.rios@mail.com | 555-1234  | Buenos Aires |
+| 2          | Pedro Núñez | pedro.nunez@mail.com | 555-2345  | Santiago     |
+| 3          | Lucía Vega  | lucia.vega@mail.com  | 555-3456  | Lima         |
+
+### Tabla Libros (1NF)
+
+| ID_Libro | Titulo                     | Genero    | Fecha_Publicacion |
+|----------|----------------------------|-----------|-------------------|
+| 1        | Introducción a la Filosofía | Filosofía | 2020-03-15        |
+| 2        | Historia de América Latina  | Historia  | 2018-10-01        |
+| 3        | Programación en Python     | Tecnología | 2021-07-20       |
+
+### Tabla Autores (1NF)
+
+| ID_Autor | Nombre | Apellido | Nacionalidad | Fecha_Nacimiento |
+|----------|--------|----------|--------------|------------------|
+| 1        | María  | González | Argentina    | 1975-06-12       |
+| 2        | Carlos | Pérez    | México       | 1980-02-24       |
+| 3        | Lucía  | Martínez | España       | 1990-10-05       |
+| 4        | Ana    | Torres   | Chile        | 1985-07-19       |
+
+### Tabla Libro_Autor (1NF)
+
+| ID_Libro | ID_Autor | Es_Autor_Principal |
+|----------|----------|-------------------|
+| 1        | 1        | Sí                |
+| 2        | 2        | Sí                |
+| 3        | 3        | Sí                |
+| 3        | 4        | No                |
+
+## SEGUNDA FORMA NORMAL (2NF)
+
+La segunda forma normal requiere que:
+1. La tabla esté en 1NF
+2. Todos los atributos no clave dependan completamente de la clave primaria, no solo de una parte de ella
+
+En nuestro caso, ya hemos separado los datos en tablas con dependencias adecuadas. La tabla Libro_Autor tenía una clave primaria compuesta (ID_Libro, ID_Autor) y el atributo Es_Autor_Principal depende de ambas, así que está en 2NF.
+
+Las tablas quedan igual que en 1NF ya que todas cumplen con la segunda forma normal:
+
+- Tabla Ventas: La clave primaria es ID_Venta, y todos los campos dependen completamente de ella
+- Tabla Clientes: La clave primaria es ID_Cliente, y todos los campos dependen completamente de ella
+- Tabla Libros: La clave primaria es ID_Libro, y todos los campos dependen completamente de ella
+- Tabla Autores: La clave primaria es ID_Autor, y todos los campos dependen completamente de ella
+- Tabla Libro_Autor: La clave primaria compuesta es (ID_Libro, ID_Autor), y el atributo Es_Autor_Principal depende completamente de esta combinación
+
+## TERCERA FORMA NORMAL (3NF)
+
+La tercera forma normal requiere que:
+1. La tabla esté en 2NF
+2. No existan dependencias transitivas (atributos que dependen de otros atributos no clave)
+
+Al revisar nuestras tablas, no encontramos dependencias transitivas:
+
+- En Ventas: Ningún campo depende de otro que no sea la clave primaria
+- En Clientes: Ningún campo depende de otro que no sea la clave primaria
+- En Libros: Ningún campo depende de otro que no sea la clave primaria
+- En Autores: Ningún campo depende de otro que no sea la clave primaria
+- En Libro_Autor: Ningún campo depende de otro que no sea la clave primaria compuesta
+
+Por lo tanto, las tablas ya están en 3NF. Esto coincide con el diseño del diagrama ER actual:
+
+### Tabla Ventas (3NF)
+
+| ID (PK) | Cliente_ID (FK) | Libro_ID (FK) | Fecha_Venta | Cantidad | Precio_Unitario |
+|---------|----------------|--------------|-------------|----------|-----------------|
+| 1       | 1              | 1            | 2023-06-01  | 2        | 25.00           |
+| 2       | 2              | 2            | 2023-06-05  | 1        | 30.00           |
+| 3       | 3              | 3            | 2023-06-10  | 3        | 40.00           |
+
+### Tabla Clientes (3NF)
+
+| ID (PK) | Nombre      | Email              | Telefono  | Ciudad       |
+|---------|-------------|-------------------|-----------|--------------|
+| 1       | Andrea Ríos | andrea.rios@mail.com | 555-1234  | Buenos Aires |
+| 2       | Pedro Núñez | pedro.nunez@mail.com | 555-2345  | Santiago     |
+| 3       | Lucía Vega  | lucia.vega@mail.com  | 555-3456  | Lima         |
+
+### Tabla Libros (3NF)
+
+| ID (PK) | Titulo                     | Genero    | Fecha_Publicacion |
+|---------|----------------------------|-----------|-------------------|
+| 1       | Introducción a la Filosofía | Filosofía | 2020-03-15        |
+| 2       | Historia de América Latina  | Historia  | 2018-10-01        |
+| 3       | Programación en Python     | Tecnología | 2021-07-20       |
+
+### Tabla Autores (3NF)
+
+| ID (PK) | Nombre | Apellido | Nacionalidad | Fecha_Nacimiento |
+|---------|--------|----------|--------------|------------------|
+| 1       | María  | González | Argentina    | 1975-06-12       |
+| 2       | Carlos | Pérez    | México       | 1980-02-24       |
+| 3       | Lucía  | Martínez | España       | 1990-10-05       |
+| 4       | Ana    | Torres   | Chile        | 1985-07-19       |
+
+### Tabla LibroAutor (3NF)
+
+| Libro_ID (PK/FK) | Autor_ID (PK/FK) | Es_Autor_Principal |
+|----------------|----------------|-------------------|
+| 1              | 1              | Sí                |
+| 2              | 2              | Sí                |
+| 3              | 3              | Sí                |
+| 3              | 4              | No                |
+
+## CONCLUSIÓN
+
+La base de datos para el sistema editorial ha pasado por las tres formas normales principales:
+
+1. 1NF: Eliminando grupos repetitivos y asegurando valores atómicos
+2. 2NF: Garantizando que todos los atributos dependan completamente de la clave primaria
+3. 3NF: Eliminando dependencias transitivas
+
+El diseño resultante minimiza la redundancia de datos, mejora la integridad y facilita el mantenimiento, con cinco tablas principales: Clientes, Autores, Libros, LibroAutor (tabla de relación muchos a muchos) y Ventas. 

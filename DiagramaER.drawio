@@ -1,0 +1,196 @@
+<mxfile host="app.diagrams.net" modified="20250509135200" agent="Mozilla/5.0" etag="C1234567890" version="21.5.0" type="device">
+  <diagram id="database-diagram" name="Editorial">
+    <mxGraphModel dx="1022" dy="591" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Entidad Autores -->
+        <mxCell id="autores" value="Autores" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="180" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="autores_header" value="PK" style="shape=partialRectangle;collapsible=0;dropTarget=0;pointerEvents=0;fillColor=#d5e8d4;top=0;left=0;bottom=0;right=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;" vertex="1" parent="autores">
+          <mxGeometry y="30" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="autores_id" value="id SERIAL" style="shape=partialRectangle;fontStyle=1;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="autores">
+          <mxGeometry y="60" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="autores_nombre" value="nombre VARCHAR(100)" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="autores">
+          <mxGeometry y="90" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="autores_apellido" value="apellido VARCHAR(100)" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="autores">
+          <mxGeometry y="120" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="autores_nacionalidad" value="nacionalidad VARCHAR(50)" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="autores">
+          <mxGeometry y="150" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="autores_fecha" value="fecha_nacimiento DATE" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="1">
+          <mxGeometry x="40" y="180" width="180" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Entidad Libros -->
+        <mxCell id="libros" value="Libros" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="600" y="40" width="180" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="libros_header" value="PK" style="shape=partialRectangle;collapsible=0;dropTarget=0;pointerEvents=0;fillColor=#dae8fc;top=0;left=0;bottom=0;right=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;" vertex="1" parent="libros">
+          <mxGeometry y="30" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="libros_id" value="id SERIAL" style="shape=partialRectangle;fontStyle=1;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="libros">
+          <mxGeometry y="60" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="libros_titulo" value="titulo VARCHAR(200)" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="libros">
+          <mxGeometry y="90" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="libros_fecha" value="fecha_publicacion DATE" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="libros">
+          <mxGeometry y="120" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="libros_genero" value="genero VARCHAR(50)" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="1">
+          <mxGeometry x="600" y="160" width="180" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Entidad LibroAutor -->
+        <mxCell id="libroautor" value="LibroAutor" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="320" y="40" width="180" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="libroautor_header" value="PK/FK" style="shape=partialRectangle;collapsible=0;dropTarget=0;pointerEvents=0;fillColor=#fff2cc;top=0;left=0;bottom=0;right=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;" vertex="1" parent="libroautor">
+          <mxGeometry y="30" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="libroautor_libro_id" value="libro_id INT" style="shape=partialRectangle;fontStyle=1;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="libroautor">
+          <mxGeometry y="60" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="libroautor_autor_id" value="autor_id INT" style="shape=partialRectangle;fontStyle=1;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="libroautor">
+          <mxGeometry y="90" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="libroautor_es_principal" value="es_autor_principal BOOLEAN" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="1">
+          <mxGeometry x="320" y="130" width="180" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Entidad Clientes -->
+        <mxCell id="clientes" value="Clientes" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="280" width="180" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="clientes_header" value="PK" style="shape=partialRectangle;collapsible=0;dropTarget=0;pointerEvents=0;fillColor=#f8cecc;top=0;left=0;bottom=0;right=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;" vertex="1" parent="clientes">
+          <mxGeometry y="30" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="clientes_id" value="id SERIAL" style="shape=partialRectangle;fontStyle=1;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="clientes">
+          <mxGeometry y="60" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="clientes_nombre" value="nombre VARCHAR(100)" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="clientes">
+          <mxGeometry y="90" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="clientes_email" value="email VARCHAR(100)" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="clientes">
+          <mxGeometry y="120" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="clientes_telefono" value="telefono VARCHAR(20)" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="clientes">
+          <mxGeometry y="150" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="clientes_ciudad" value="ciudad VARCHAR(100)" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="1">
+          <mxGeometry x="40" y="430" width="180" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Entidad Ventas -->
+        <mxCell id="ventas" value="Ventas" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="600" y="280" width="180" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="ventas_header_pk" value="PK" style="shape=partialRectangle;collapsible=0;dropTarget=0;pointerEvents=0;fillColor=#e1d5e7;top=0;left=0;bottom=0;right=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;" vertex="1" parent="ventas">
+          <mxGeometry y="30" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ventas_id" value="id SERIAL" style="shape=partialRectangle;fontStyle=1;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="ventas">
+          <mxGeometry y="60" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ventas_header_fk" value="FK" style="shape=partialRectangle;collapsible=0;dropTarget=0;pointerEvents=0;fillColor=#e1d5e7;top=0;left=0;bottom=0;right=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;" vertex="1" parent="ventas">
+          <mxGeometry y="90" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ventas_cliente_id" value="cliente_id INT" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;fontStyle=2;" vertex="1" parent="ventas">
+          <mxGeometry y="120" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ventas_libro_id" value="libro_id INT" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;fontStyle=2;" vertex="1" parent="ventas">
+          <mxGeometry y="150" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ventas_fecha" value="fecha_venta DATE" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="ventas">
+          <mxGeometry y="180" width="180" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Campos adicionales en tablas -->
+        <mxCell id="ventas_cantidad" value="cantidad INT" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="1">
+          <mxGeometry x="600" y="460" width="180" height="30" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="ventas_precio" value="precio_unitario NUMERIC(10,2)" style="shape=partialRectangle;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;" vertex="1" parent="1">
+          <mxGeometry x="600" y="490" width="180" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Relaciones (pata de gallo) -->
+        
+        <!-- LibroAutor -> Autores (N:1) -->
+        <mxCell id="rel_libroautor_autores" value="" style="edgeStyle=orthogonalEdgeStyle;fontSize=12;html=1;endArrow=ERoneToMany;startArrow=ERmandOne;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;curved=1;" edge="1" parent="1" source="libroautor_autor_id" target="autores_id">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="350" y="380" as="sourcePoint" />
+            <mxPoint x="450" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- LibroAutor -> Libros (N:1) -->
+        <mxCell id="rel_libroautor_libros" value="" style="edgeStyle=orthogonalEdgeStyle;fontSize=12;html=1;endArrow=ERoneToMany;startArrow=ERmandOne;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=1;" edge="1" parent="1" source="libroautor_libro_id" target="libros_id">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="350" y="380" as="sourcePoint" />
+            <mxPoint x="450" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Ventas -> Clientes (N:1) -->
+        <mxCell id="rel_ventas_clientes" value="" style="edgeStyle=orthogonalEdgeStyle;fontSize=12;html=1;endArrow=ERoneToMany;startArrow=ERmandOne;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;curved=1;" edge="1" parent="1" source="ventas_cliente_id" target="clientes_id">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="350" y="380" as="sourcePoint" />
+            <mxPoint x="450" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Ventas -> Libros (N:1) -->
+        <mxCell id="rel_ventas_libros" value="" style="edgeStyle=orthogonalEdgeStyle;fontSize=12;html=1;endArrow=ERoneToMany;startArrow=ERmandOne;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;curved=1;" edge="1" parent="1" source="ventas_libro_id" target="libros_id">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="350" y="380" as="sourcePoint" />
+            <mxPoint x="450" y="280" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="810" y="165" />
+              <mxPoint x="810" y="75" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Título del diagrama -->
+        <mxCell id="diagram_title" value="Diagrama Entidad-Relación: Sistema Editorial" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="213" y="10" width="394" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Leyenda -->
+        <mxCell id="legend" value="Notación Pata de Gallo (Crow's Foot)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="290" y="550" width="240" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- Leyenda de símbolos -->
+        <mxCell id="symbol1" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmandOne;startArrow=none;endFill=0;startFill=0;" edge="1" parent="1">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="300" y="585" as="sourcePoint" />
+            <mxPoint x="380" y="585" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="symbol1_label" value="Uno (obligatorio)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="390" y="575" width="110" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="symbol2" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERoneToMany;startArrow=none;endFill=0;startFill=0;" edge="1" parent="1">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="300" y="615" as="sourcePoint" />
+            <mxPoint x="380" y="615" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="symbol2_label" value="Muchos" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="390" y="605" width="110" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile> 

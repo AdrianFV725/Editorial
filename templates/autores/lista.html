@@ -1,0 +1,65 @@
+{% extends 'base.html' %} {% block title %}Autores - Editorial{% endblock %} {%
+block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Autores</h1>
+    <a href="{{ url_for('nuevo_autor') }}" class="btn btn-primary">
+      <i class="bi bi-person-plus me-1"></i> Nuevo Autor
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Nacionalidad</th>
+              <th>Fecha de Nacimiento</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for autor in autores %}
+            <tr>
+              <td>{{ autor.nombre }}</td>
+              <td>{{ autor.apellido }}</td>
+              <td>{{ autor.nacionalidad or 'No disponible' }}</td>
+              <td>
+                {{ autor.fecha_nacimiento.strftime('%d/%m/%Y') if
+                autor.fecha_nacimiento else 'No disponible' }}
+              </td>
+              <td>
+                <div class="btn-group">
+                  <a
+                    href="{{ url_for('editar_autor', id=autor.id) }}"
+                    class="btn btn-sm btn-outline-primary"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <a
+                    href="{{ url_for('eliminar_autor', id=autor.id) }}"
+                    class="btn btn-sm btn-outline-danger"
+                    onclick="return confirm('¿Está seguro de eliminar este autor?')"
+                  >
+                    <i class="bi bi-trash"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5" class="text-center">
+                No hay autores registrados
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

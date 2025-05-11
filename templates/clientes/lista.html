@@ -1,0 +1,92 @@
+{% extends 'base.html' %} {% block title %}Clientes - Editorial{% endblock %} {%
+block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Clientes</h1>
+    <a href="{{ url_for('nuevo_cliente') }}" class="btn btn-primary">
+      <i class="bi bi-person-plus-fill me-1"></i> Nuevo Cliente
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Foto</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Ciudad</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for cliente in clientes %}
+            <tr>
+              <td>
+                {% if cliente.foto_perfil == 'default.jpg' or not
+                cliente.foto_perfil %}
+                <img
+                  src="{{ url_for('static', filename='img/profiles/default.jpg') }}"
+                  alt="{{ cliente.nombre }}"
+                  class="profile-img"
+                  width="50"
+                  height="50"
+                />
+                {% else %}
+                <img
+                  src="{{ url_for('serve_profile_image', filename=cliente.foto_perfil) }}"
+                  alt="{{ cliente.nombre }}"
+                  class="profile-img"
+                  width="50"
+                  height="50"
+                  onerror="this.src='{{ url_for('static', filename='img/profiles/default.jpg') }}'"
+                />
+                {% endif %}
+              </td>
+              <td>{{ cliente.nombre }}</td>
+              <td>{{ cliente.email }}</td>
+              <td>{{ cliente.telefono }}</td>
+              <td>{{ cliente.ciudad }}</td>
+              <td>
+                <div class="btn-group">
+                  <a
+                    href="{{ url_for('editar_cliente', id=cliente.id) }}"
+                    class="btn btn-sm btn-outline-primary"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <a
+                    href="{{ url_for('eliminar_cliente', id=cliente.id) }}"
+                    class="btn btn-sm btn-outline-danger"
+                    onclick="return confirm('¿Está seguro de eliminar este cliente?')"
+                  >
+                    <i class="bi bi-trash"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="6" class="text-center">
+                No hay clientes registrados
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .profile-img {
+    object-fit: cover;
+    border-radius: 50%;
+    border: 1px solid #e0e0e0;
+  }
+</style>
+{% endblock %}

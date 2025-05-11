@@ -1,0 +1,276 @@
+{% extends 'base.html' %} {% block title %}Estadísticas por Autor - Editorial{%
+endblock %} {% block extra_css %}
+<style>
+  .progress {
+    height: 20px;
+  }
+  .card-autor {
+    transition: all 0.3s;
+  }
+  .card-autor:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  .chart-container {
+    min-height: 400px;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Estadísticas por Autor</h1>
+    <div>
+      <a
+        href="{{ url_for('estadisticas_libros') }}"
+        class="btn btn-outline-primary me-2"
+      >
+        <i class="bi bi-book me-1"></i> Ver por Libro
+      </a>
+      <a href="{{ url_for('listar_ventas') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Volver a Ventas
+      </a>
+    </div>
+  </div>
+
+  {% if estadisticas %}
+  <!-- Resumen general -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Resumen General</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4 text-center">
+          <h6>Total de Autores</h6>
+          <h2>{{ estadisticas|length }}</h2>
+        </div>
+        <div class="col-md-4 text-center border-start border-end">
+          <h6>Ingresos Totales</h6>
+          <h2>
+            ${{ '%0.2f'|format(estadisticas|sum(attribute='ingresos_totales') or
+            0) }}
+          </h2>
+        </div>
+        <div class="col-md-4 text-center">
+          <h6>Promedio por Autor</h6>
+          <h2>
+            ${{ '%0.2f'|format((estadisticas|sum(attribute='ingresos_totales')
+            or 0) / estadisticas|length) }}
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficas -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">Ingresos por Autor</h5>
+        </div>
+        <div class="card-body">
+          <div id="ingresos-chart" class="chart-container"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">Cantidad de Libros Vendidos por Autor</h5>
+        </div>
+        <div class="card-body">
+          <div id="cantidad-chart" class="chart-container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">Ranking de Autores por Ventas</h5>
+    </div>
+    <div class="card-body">
+      <div id="ranking-chart" class="chart-container"></div>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="alert alert-info">
+    <h4 class="alert-heading">Sin datos disponibles</h4>
+    <p>
+      Aún no hay datos de ventas para mostrar estadísticas por autor. Registre
+      algunas ventas para ver esta información.
+    </p>
+    <hr />
+    <p class="mb-0">
+      <a href="{{ url_for('nueva_venta') }}" class="btn btn-primary">
+        <i class="bi bi-bag-plus me-1"></i> Registrar una venta
+      </a>
+    </p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %} {% block scripts %}
+<!-- Highcharts -->
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    {% if estadisticas %}
+    // Datos para los gráficos
+    const autores = [
+      {% for autor in estadisticas %}
+        {
+          nombre: "{{ autor.nombre }} {{ autor.apellido }}",
+          ingresos: {{ autor.ingresos_totales }},
+          cantidad: {{ autor.total_vendidos }}
+        },
+      {% endfor %}
+    ];
+
+    // Gráfico de ingresos por autor (Donut)
+    Highcharts.chart('ingresos-chart', {
+      chart: {
+        type: 'pie'
+      },
+      title: {
+        text: ''
+      },
+      tooltip: {
+        pointFormat: '{series.name}: <b>${point.y:.2f}</b>'
+      },
+      plotOptions: {
+        pie: {
+          allowPointSelect: true,
+          cursor: 'pointer',
+          dataLabels: {
+            enabled: true,
+            format: '<b>{point.name}</b>: ${point.y:.2f}'
+          },
+          showInLegend: true
+        }
+      },
+      series: [{
+        name: 'Ingresos',
+        colorByPoint: true,
+        data: autores.map(autor => ({
+          name: autor.nombre,
+          y: autor.ingresos
+        }))
+      }]
+    });
+
+    // Gráfico de cantidad vendida por autor (Columnas)
+    Highcharts.chart('cantidad-chart', {
+      chart: {
+        type: 'column'
+      },
+      title: {
+        text: ''
+      },
+      xAxis: {
+        categories: autores.map(autor => autor.nombre),
+        crosshair: true
+      },
+      yAxis: {
+        min: 0,
+        title: {
+          text: 'Cantidad'
+        }
+      },
+      tooltip: {
+        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+          '<td style="padding:0"><b>{point.y} unidades</b></td></tr>',
+        footerFormat: '</table>',
+        shared: true,
+        useHTML: true
+      },
+      plotOptions: {
+        column: {
+          pointPadding: 0.2,
+          borderWidth: 0
+        }
+      },
+      series: [{
+        name: 'Unidades Vendidas',
+        data: autores.map(autor => autor.cantidad),
+        colorByPoint: true
+      }]
+    });
+
+    // Ranking de autores (gráfico horizontal)
+    Highcharts.chart('ranking-chart', {
+      chart: {
+        type: 'bar'
+      },
+      title: {
+        text: ''
+      },
+      xAxis: {
+        categories: autores.map(autor => autor.nombre),
+        title: {
+          text: null
+        }
+      },
+      yAxis: [{
+        min: 0,
+        title: {
+          text: 'Ingresos ($)',
+          align: 'high'
+        },
+        labels: {
+          overflow: 'justify'
+        }
+      }, {
+        min: 0,
+        title: {
+          text: 'Unidades',
+          align: 'high'
+        },
+        labels: {
+          overflow: 'justify'
+        },
+        opposite: true
+      }],
+      tooltip: {
+        shared: true
+      },
+      plotOptions: {
+        bar: {
+          dataLabels: {
+            enabled: true
+          }
+        }
+      },
+      legend: {
+        layout: 'vertical',
+        align: 'right',
+        verticalAlign: 'top',
+        x: -40,
+        y: 80,
+        floating: true,
+        borderWidth: 1,
+        backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || '#FFFFFF',
+        shadow: true
+      },
+      credits: {
+        enabled: false
+      },
+      series: [{
+        name: 'Ingresos ($)',
+        data: autores.map(autor => autor.ingresos)
+      }, {
+        name: 'Unidades vendidas',
+        data: autores.map(autor => autor.cantidad),
+        yAxis: 1
+      }]
+    });
+    {% endif %}
+  });
+</script>
+{% endblock %}

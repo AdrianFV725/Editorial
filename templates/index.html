@@ -1,0 +1,275 @@
+{% extends 'base.html' %} {% block title %}Dashboard - Editorial{% endblock %}
+{% block extra_css %}
+<style>
+  .chart-container {
+    height: 300px;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="container py-4">
+  <h1 class="mb-4">Dashboard</h1>
+
+  <div class="row g-4">
+    <!-- Total de Clientes -->
+    <div class="col-md-3">
+      <div class="card border-primary card-dashboard h-100">
+        <div class="card-body text-center">
+          <i class="bi bi-people text-primary" style="font-size: 2.5rem"></i>
+          <h5 class="card-title mt-3">Clientes</h5>
+          <h2 class="card-text">{{ total_clientes }}</h2>
+          <a
+            href="{{ url_for('listar_clientes') }}"
+            class="btn btn-sm btn-outline-primary mt-2"
+            >Ver Clientes</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Total de Libros -->
+    <div class="col-md-3">
+      <div class="card border-success card-dashboard h-100">
+        <div class="card-body text-center">
+          <i class="bi bi-book text-success" style="font-size: 2.5rem"></i>
+          <h5 class="card-title mt-3">Libros</h5>
+          <h2 class="card-text">{{ total_libros }}</h2>
+          <a
+            href="{{ url_for('listar_libros') }}"
+            class="btn btn-sm btn-outline-success mt-2"
+            >Ver Libros</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Total de Autores -->
+    <div class="col-md-3">
+      <div class="card border-info card-dashboard h-100">
+        <div class="card-body text-center">
+          <i class="bi bi-person-badge text-info" style="font-size: 2.5rem"></i>
+          <h5 class="card-title mt-3">Autores</h5>
+          <h2 class="card-text">{{ total_autores }}</h2>
+          <a
+            href="{{ url_for('listar_autores') }}"
+            class="btn btn-sm btn-outline-info mt-2"
+            >Ver Autores</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Total de Ventas (Ingresos) -->
+    <div class="col-md-3">
+      <div class="card border-danger card-dashboard h-100">
+        <div class="card-body text-center">
+          <i
+            class="bi bi-currency-dollar text-danger"
+            style="font-size: 2.5rem"
+          ></i>
+          <h5 class="card-title mt-3">Ingresos</h5>
+          <h2 class="card-text">${{ '%0.2f'|format(total_ventas) }}</h2>
+          <a
+            href="{{ url_for('listar_ventas') }}"
+            class="btn btn-sm btn-outline-danger mt-2"
+            >Ver Ventas</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-5">
+    <div class="col-md-6">
+      <div class="card">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <h5 class="mb-0">Estadísticas por Libro</h5>
+          <a
+            href="{{ url_for('estadisticas_libros') }}"
+            class="btn btn-sm btn-primary"
+            >Ver todo</a
+          >
+        </div>
+        <div class="card-body">
+          <div id="libros-chart" class="chart-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <h5 class="mb-0">Estadísticas por Autor</h5>
+          <a
+            href="{{ url_for('estadisticas_autores') }}"
+            class="btn btn-sm btn-primary"
+            >Ver todo</a
+          >
+        </div>
+        <div class="card-body">
+          <div id="autores-chart" class="chart-container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Accesos Rápidos</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <a
+                href="{{ url_for('nuevo_cliente') }}"
+                class="btn btn-outline-primary w-100 py-3"
+              >
+                <i
+                  class="bi bi-person-plus-fill mb-2"
+                  style="font-size: 1.5rem"
+                ></i>
+                <br />Nuevo Cliente
+              </a>
+            </div>
+            <div class="col-md-3 mb-3">
+              <a
+                href="{{ url_for('nuevo_libro') }}"
+                class="btn btn-outline-success w-100 py-3"
+              >
+                <i
+                  class="bi bi-journal-plus mb-2"
+                  style="font-size: 1.5rem"
+                ></i>
+                <br />Nuevo Libro
+              </a>
+            </div>
+            <div class="col-md-3 mb-3">
+              <a
+                href="{{ url_for('nuevo_autor') }}"
+                class="btn btn-outline-info w-100 py-3"
+              >
+                <i class="bi bi-person-plus mb-2" style="font-size: 1.5rem"></i>
+                <br />Nuevo Autor
+              </a>
+            </div>
+            <div class="col-md-3 mb-3">
+              <a
+                href="{{ url_for('nueva_venta') }}"
+                class="btn btn-outline-danger w-100 py-3"
+              >
+                <i class="bi bi-bag-plus mb-2" style="font-size: 1.5rem"></i>
+                <br />Nueva Venta
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block scripts %}
+<!-- Highcharts -->
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Gráfico de libros más vendidos
+    Highcharts.chart("libros-chart", {
+      chart: {
+        type: "column",
+      },
+      title: {
+        text: "",
+      },
+      xAxis: {
+        type: "category",
+        labels: {
+          rotation: -45,
+          style: {
+            fontSize: "11px",
+          },
+        },
+      },
+      yAxis: {
+        min: 0,
+        title: {
+          text: "Unidades vendidas",
+        },
+      },
+      legend: {
+        enabled: false,
+      },
+      tooltip: {
+        pointFormat: "Ventas: <b>{point.y}</b>",
+      },
+      series: [
+        {
+          name: "Libros",
+          colorByPoint: true,
+          data: [
+            {% for libro in top_libros %}
+              ['{{ libro.titulo }}', {{ libro.total_vendidos }}]{% if not loop.last %},{% endif %}
+            {% endfor %}
+          ],
+          dataLabels: {
+            enabled: true,
+            color: "#000000",
+            align: "center",
+            format: "{point.y}",
+          },
+        },
+      ],
+    });
+
+    // Gráfico de ingresos por autor
+    Highcharts.chart("autores-chart", {
+      chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: "pie",
+      },
+      title: {
+        text: "",
+      },
+      tooltip: {
+        pointFormat: "{series.name}: <b>${point.y:.2f}</b>",
+      },
+      accessibility: {
+        point: {
+          valueSuffix: "%",
+        },
+      },
+      plotOptions: {
+        pie: {
+          allowPointSelect: true,
+          cursor: "pointer",
+          dataLabels: {
+            enabled: true,
+            format: "<b>{point.name}</b>: {point.percentage:.1f} %",
+          },
+        },
+      },
+      series: [
+        {
+          name: "Ingresos",
+          colorByPoint: true,
+          data: [
+            {% for autor in top_autores %}
+              { name: '{{ autor.autor }}', y: {{ autor.ingresos }} }{% if not loop.last %},{% endif %}
+            {% endfor %}
+          ],
+        },
+      ],
+    });
+  });
+</script>
+{% endblock %}

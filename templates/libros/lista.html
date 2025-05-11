@@ -1,0 +1,90 @@
+{% extends 'base.html' %} {% block title %}Libros - Editorial{% endblock %} {%
+block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Libros</h1>
+    <a href="{{ url_for('nuevo_libro') }}" class="btn btn-primary">
+      <i class="bi bi-journal-plus me-1"></i> Nuevo Libro
+    </a>
+  </div>
+
+  <!-- Filtro por género -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">Filtrar por género</h5>
+    </div>
+    <div class="card-body">
+      <div class="d-flex flex-wrap gap-2">
+        <a
+          href="{{ url_for('filtrar_libros') }}"
+          class="btn {% if not filtro_actual %}btn-primary{% else %}btn-outline-primary{% endif %}"
+        >
+          Todos
+        </a>
+        {% for genero in generos %}
+        <a
+          href="{{ url_for('filtrar_libros', genero=genero) }}"
+          class="btn {% if filtro_actual == genero %}btn-primary{% else %}btn-outline-primary{% endif %}"
+        >
+          {{ genero }}
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Título</th>
+              <th>Género</th>
+              <th>Fecha de Publicación</th>
+              <th>Autores</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for libro in libros %}
+            <tr>
+              <td>{{ libro.titulo }}</td>
+              <td>
+                <span class="badge bg-primary">{{ libro.genero }}</span>
+              </td>
+              <td>
+                {{ libro.fecha_publicacion.strftime('%d/%m/%Y') if
+                libro.fecha_publicacion else 'No disponible' }}
+              </td>
+              <td>{{ libro.autores or 'Sin autores' }}</td>
+              <td>
+                <div class="btn-group">
+                  <a
+                    href="{{ url_for('editar_libro', id=libro.id) }}"
+                    class="btn btn-sm btn-outline-primary"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <a
+                    href="{{ url_for('eliminar_libro', id=libro.id) }}"
+                    class="btn btn-sm btn-outline-danger"
+                    onclick="return confirm('¿Está seguro de eliminar este libro?')"
+                  >
+                    <i class="bi bi-trash"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5" class="text-center">No hay libros registrados</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

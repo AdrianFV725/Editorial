@@ -1,0 +1,299 @@
+{% extends 'base.html' %} {% block title %}Estadísticas por Libro - Editorial{%
+endblock %} {% block extra_css %}
+<style>
+  .progress {
+    height: 20px;
+  }
+  .card-libro {
+    transition: all 0.3s;
+  }
+  .card-libro:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  .chart-container {
+    min-height: 400px;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Estadísticas por Libro</h1>
+    <div>
+      <a
+        href="{{ url_for('estadisticas_autores') }}"
+        class="btn btn-outline-primary me-2"
+      >
+        <i class="bi bi-person-badge me-1"></i> Ver por Autor
+      </a>
+      <a href="{{ url_for('listar_ventas') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Volver a Ventas
+      </a>
+    </div>
+  </div>
+
+  {% if estadisticas %}
+  <!-- Resumen general -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Resumen General</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4 text-center">
+          <h6>Total de Libros Vendidos</h6>
+          <h2>{{ estadisticas|sum(attribute='total_vendidos') or 0 }}</h2>
+        </div>
+        <div class="col-md-4 text-center border-start border-end">
+          <h6>Ingresos Totales</h6>
+          <h2>
+            ${{ '%0.2f'|format(estadisticas|sum(attribute='ingresos_totales') or
+            0) }}
+          </h2>
+        </div>
+        <div class="col-md-4 text-center">
+          <h6>Promedio por Libro</h6>
+          <h2>
+            ${{ '%0.2f'|format((estadisticas|sum(attribute='ingresos_totales')
+            or 0) / estadisticas|length) }}
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficas -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">Ingresos por Libro</h5>
+        </div>
+        <div class="card-body">
+          <div id="ingresos-chart" class="chart-container"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">Cantidad de Libros Vendidos</h5>
+        </div>
+        <div class="card-body">
+          <div id="cantidad-chart" class="chart-container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">Comparativa de Ventas por Libro</h5>
+    </div>
+    <div class="card-body">
+      <div id="comparativa-chart" class="chart-container"></div>
+    </div>
+  </div>
+
+  <!-- Libros sin ventas -->
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">Libros sin Ventas</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        {% set libros_sin_ventas = estadisticas|selectattr('ingresos_totales',
+        'none')|list %} {% if libros_sin_ventas|length > 0 %} {% for libro in
+        libros_sin_ventas %}
+        <div class="col-md-4 mb-3">
+          <div class="card card-libro h-100">
+            <div class="card-body">
+              <h5>{{ libro.titulo }}</h5>
+              <p class="text-muted mb-0">{{ libro.genero }}</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %} {% else %}
+        <div class="col-12">
+          <p class="text-center mb-0">
+            ¡Todos los libros tienen ventas registradas!
+          </p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="alert alert-info">
+    <h4 class="alert-heading">Sin datos disponibles</h4>
+    <p>
+      Aún no hay datos de ventas para mostrar estadísticas. Registre algunas
+      ventas para ver esta información.
+    </p>
+    <hr />
+    <p class="mb-0">
+      <a href="{{ url_for('nueva_venta') }}" class="btn btn-primary">
+        <i class="bi bi-bag-plus me-1"></i> Registrar una venta
+      </a>
+    </p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %} {% block scripts %}
+<!-- Highcharts -->
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    {% if estadisticas and estadisticas|selectattr('ingresos_totales', 'defined')|list|length > 0 %}
+
+    // Datos para los gráficos
+    const libros = [
+      {% for libro in estadisticas if libro.ingresos_totales %}
+        {
+          titulo: "{{ libro.titulo }}",
+          genero: "{{ libro.genero }}",
+          ingresos: {{ libro.ingresos_totales or 0 }},
+          cantidad: {{ libro.total_vendidos or 0 }}
+        },
+      {% endfor %}
+    ];
+
+    // Gráfico de ingresos por libro
+    Highcharts.chart('ingresos-chart', {
+      chart: {
+        type: 'pie',
+        options3d: {
+          enabled: true,
+          alpha: 45
+        }
+      },
+      title: {
+        text: ''
+      },
+      tooltip: {
+        pointFormat: '{series.name}: <b>${point.y:.2f}</b>'
+      },
+      plotOptions: {
+        pie: {
+          innerSize: 100,
+          depth: 45,
+          dataLabels: {
+            enabled: true,
+            format: '<b>{point.name}</b>: ${point.y:.2f}'
+          }
+        }
+      },
+      series: [{
+        name: 'Ingresos',
+        colorByPoint: true,
+        data: libros.map(libro => ({
+          name: libro.titulo,
+          y: libro.ingresos
+        }))
+      }]
+    });
+
+    // Gráfico de cantidad de libros vendidos
+    Highcharts.chart('cantidad-chart', {
+      chart: {
+        type: 'column'
+      },
+      title: {
+        text: ''
+      },
+      xAxis: {
+        categories: libros.map(libro => libro.titulo),
+        crosshair: true
+      },
+      yAxis: {
+        min: 0,
+        title: {
+          text: 'Cantidad'
+        }
+      },
+      tooltip: {
+        headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+        pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+          '<td style="padding:0"><b>{point.y} unidades</b></td></tr>',
+        footerFormat: '</table>',
+        shared: true,
+        useHTML: true
+      },
+      plotOptions: {
+        column: {
+          pointPadding: 0.2,
+          borderWidth: 0
+        }
+      },
+      series: [{
+        name: 'Unidades Vendidas',
+        data: libros.map(libro => libro.cantidad),
+        colorByPoint: true
+      }]
+    });
+
+    // Gráfico comparativo
+    Highcharts.chart('comparativa-chart', {
+      chart: {
+        type: 'bar'
+      },
+      title: {
+        text: ''
+      },
+      xAxis: {
+        categories: libros.map(libro => libro.titulo)
+      },
+      yAxis: [{
+        title: {
+          text: 'Unidades Vendidas'
+        }
+      }, {
+        title: {
+          text: 'Ingresos ($)'
+        },
+        opposite: true
+      }],
+      legend: {
+        align: 'center',
+        verticalAlign: 'bottom',
+        floating: false,
+        backgroundColor: Highcharts.defaultOptions.legend.backgroundColor || '#FFFFFF',
+        shadow: false
+      },
+      tooltip: {
+        shared: true
+      },
+      plotOptions: {
+        bar: {
+          grouping: false,
+          shadow: false,
+          borderWidth: 0
+        }
+      },
+      series: [{
+        name: 'Unidades Vendidas',
+        color: '#4285F4',
+        data: libros.map(libro => libro.cantidad),
+        tooltip: {
+          valueSuffix: ' unidades'
+        }
+      }, {
+        name: 'Ingresos',
+        color: '#34A853',
+        data: libros.map(libro => libro.ingresos),
+        tooltip: {
+          valuePrefix: '$',
+          valueSuffix: ''
+        },
+        yAxis: 1
+      }]
+    });
+    {% endif %}
+  });
+</script>
+{% endblock %}
