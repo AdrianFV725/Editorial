@@ -25,5 +25,13 @@ ENV PYTHONUNBUFFERED=1
 # Exponer puerto
 EXPOSE 8080
 
+# Crear un script de inicio que inicialice la base de datos y luego inicie la aplicación
+RUN echo '#!/bin/bash \n\
+    python init_db.py && \
+    gunicorn --bind 0.0.0.0:$PORT app:app \
+    ' > /app/docker-entrypoint.sh
+
+RUN chmod +x /app/docker-entrypoint.sh
+
 # Comando para iniciar la aplicación
-CMD gunicorn --bind 0.0.0.0:$PORT app:app 
+CMD ["/app/docker-entrypoint.sh"] 

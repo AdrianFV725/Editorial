@@ -5,6 +5,7 @@ import os
 import shutil
 from werkzeug.utils import secure_filename
 from datetime import datetime
+import sys
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'editorial_secreto')
@@ -43,26 +44,48 @@ def serve_profile_image(filename):
 
 # Configuración de conexión a la base de datos
 def get_db_connection():
-    database_url = os.environ.get('DATABASE_URL')
-    
-    if database_url:
-        # Railway usa 'postgres://' pero psycopg2 necesita 'postgresql://'
-        if database_url.startswith("postgres://"):
-            database_url = database_url.replace("postgres://", "postgresql://", 1)
-            
-        # Si existe DATABASE_URL, usamos esa cadena de conexión (formato de Railway)
-        conn = psycopg2.connect(database_url)
+    # Imprimir información de diagnóstico
+    print("===== DIAGNÓSTICO DE CONEXIÓN A LA BASE DE DATOS =====")
+    print(f"DATABASE_URL existe: {os.environ.get('DATABASE_URL') is not None}")
+    if os.environ.get('DATABASE_URL'):
+        print(f"DATABASE_URL comienza con: {os.environ.get('DATABASE_URL')[:15]}...")
     else:
-        # Si no, usamos los parámetros individuales (entorno local)
-        conn = psycopg2.connect(
-            host=os.environ.get('DATABASE_HOST', 'localhost'),
-            database=os.environ.get('DATABASE_NAME', 'editorial'),
-            user=os.environ.get('DATABASE_USER', 'adrianfloresvillatoro'),
-            password=os.environ.get('DATABASE_PASSWORD', '')
-        )
+        print("Variables alternativas:")
+        print(f"- DATABASE_HOST: {os.environ.get('DATABASE_HOST', 'no definido')}")
+        print(f"- DATABASE_NAME: {os.environ.get('DATABASE_NAME', 'no definido')}")
+        print(f"- DATABASE_USER: {os.environ.get('DATABASE_USER', 'no definido')}")
     
-    conn.cursor_factory = psycopg2.extras.DictCursor
-    return conn
+    try:
+        database_url = os.environ.get('DATABASE_URL')
+        
+        if database_url:
+            # Railway usa 'postgres://' pero psycopg2 necesita 'postgresql://'
+            if database_url.startswith("postgres://"):
+                database_url = database_url.replace("postgres://", "postgresql://", 1)
+                print(f"URL convertida a postgresql://...")
+            
+            # Si existe DATABASE_URL, usamos esa cadena de conexión (formato de Railway)
+            print("Intentando conectar usando DATABASE_URL...")
+            conn = psycopg2.connect(database_url)
+            print("¡Conexión exitosa usando DATABASE_URL!")
+        else:
+            # Si no, usamos los parámetros individuales (entorno local)
+            print("Intentando conectar usando parámetros individuales...")
+            conn = psycopg2.connect(
+                host=os.environ.get('DATABASE_HOST', 'localhost'),
+                database=os.environ.get('DATABASE_NAME', 'editorial'),
+                user=os.environ.get('DATABASE_USER', 'adrianfloresvillatoro'),
+                password=os.environ.get('DATABASE_PASSWORD', '')
+            )
+            print("¡Conexión exitosa usando parámetros individuales!")
+        
+        conn.cursor_factory = psycopg2.extras.DictCursor
+        return conn
+    except Exception as e:
+        print(f"ERROR DE CONEXIÓN: {e}")
+        # En un entorno de producción, podrías redirigir a una página de error
+        # o tener un plan de respaldo
+        raise e
 
 # Ruta principal - Dashboard
 @app.route('/')
@@ -612,6 +635,53 @@ def estadisticas_autores():
     conn.close()
     
     return render_template('estadisticas/autores.html', estadisticas=estadisticas_autores)
+
+# Ruta de diagnóstico para verificar la configuración
+@app.route('/diagnostico')
+def diagnostico():
+    info = {
+        'app': {
+            'debug': app.debug,
+            'env': os.environ.get('FLASK_ENV', 'no definido'),
+            'secret_key_set': app.secret_key is not None,
+        },
+        'db_config': {
+            'database_url_set': os.environ.get('DATABASE_URL') is not None,
+            'database_host': os.environ.get('DATABASE_HOST', 'no definido'),
+            'database_name': os.environ.get('DATABASE_NAME', 'no definido'),
+            'database_user': os.environ.get('DATABASE_USER', 'no definido'),
+        },
+        'system': {
+            'python_version': sys.version,
+            'platform': sys.platform,
+            'port': os.environ.get('PORT', 'no definido'),
+        }
+    }
+    
+    db_status = "Unknown"
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT version()")
+        version = cur.fetchone()
+        cur.close()
+        conn.close()
+        db_status = f"Connected: {version[0]}"
+    except Exception as e:
+        db_status = f"Error: {str(e)}"
+    
+    info['db_status'] = db_status
+    
+    return jsonify(info)
+
+# Página de error para problemas de base de datos
+@app.route('/db_error')
+def db_error():
+    error_details = request.args.get('error', 'Error desconocido')
+    return render_template('error.html', 
+                          error_title="Error de Base de Datos", 
+                          error_message="No se pudo conectar a la base de datos.", 
+                          error_details=error_details)
 
 if __name__ == '__main__':
     # Agregar columna foto_perfil a la tabla clientes si no existe
